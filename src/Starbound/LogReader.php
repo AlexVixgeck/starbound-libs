@@ -149,12 +149,21 @@ class LogReader {
                 && strpos($line, 'Info:') !== false) {
                 if (preg_match('/Info\:\s*<([^>]{2,})>\s?(.*)/i', $line, $matches)) {
                     if (isset($matches[1]) && !empty($matches[1])) {
-                        $chatline = array(
-                            'name'  => htmlentities(trim($matches[1])),
-                            'text'  => htmlentities(trim($matches[2]))
-                        );
 
-                        $this->chatlog[] = $chatline;
+                        // Quick and dirty hack: ignores console commands
+						if (substr($matches[2],0,1)!="/"){
+							
+                            // Quick and dirty hack: adds "Latin 1 extended" compatibility.
+							$name = mb_convert_encoding(trim($matches[1]), "ISO-8859-1", "auto");
+							$text = mb_convert_encoding(trim($matches[2]), "ISO-8859-1", "auto");
+
+                            $chatline = array(
+                                'name'  => htmlentities(trim($matches[1])),
+                                'text'  => htmlentities(trim($matches[2]))
+                            );
+
+                            $this->chatlog[] = $chatline;
+                        }
                     }
                 }
             }
